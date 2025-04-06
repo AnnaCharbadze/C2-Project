@@ -1,0 +1,25 @@
+﻿@model School.Models.Teacher
+@{
+    ViewData["Title"] = "Delete Teacher";
+}
+
+<div id="containershow">
+    <nav>
+        <a class="navlink" href="/Teacher/List">Back To Teachers</a>
+    </nav>
+    <h2>Are you sure you want to delete @Model.TeacherFName @Model.TeacherLName?</h2>
+
+
+	<div class="teacher-details">
+        <p><strong>Employee Number:</strong> @Model.TeacherEmployeeNumber</p>
+        <p><strong>Name:</strong> @Model.TeacherFName @Model.TeacherLName</p>
+        <p><strong>Hire Date:</strong> @Model.TeacherHireDate.ToString("yyyy-MM-dd")</p>
+        <p><strong>Salary:</strong> $@Model.TeacherSalary.ToString("0.00")</p>
+    </div>
+
+    <form method="POST" action="/Teacher/Delete/@Model.TeacherId">
+        <button class="btn-warning">
+            Confirm Delete
+        </button>
+    </form>
+</div>

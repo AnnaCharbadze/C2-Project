@@ -1,0 +1,20 @@
+﻿@{
+    ViewData["Title"] = "Teacher List";
+}
+
+<div id="containerlist">
+    <h2>Teacher List</h2>
+
+    @if (TempData["ErrorMessage"] != null)
+    {
+        <div class="alert alert-danger">
+            @TempData["ErrorMessage"]
+        </div>
+    }
+
+    <div class="list-actions">
+        <a href="/Teacher/New" class="btn btn-primary">Add New Teacher</a>
+    </div>
+
+ 
+</div>
