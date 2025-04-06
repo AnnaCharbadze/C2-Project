@@ -9,7 +9,7 @@ Teacher Management API
 -Delete an existing teacher with error handling
 -Find teacher by ID
 
-#Technical Details
+Technical Details
 
 -Framework: ASP.NET Core MVC
 -Database: MySQL
@@ -17,7 +17,7 @@ Teacher Management API
 -Port: 7252 
 
 
-#Database Configuration
+Database Configuration
 The application connects to a MySQL database with the following settings:
 
 Server: localhost
