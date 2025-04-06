@@ -5,7 +5,7 @@ namespace School.Controllers
 {
     public class TeacherController : Controller
     {
-        // currently relying on the API to retrieve teacher information
+        
         private readonly TeacherAPIController _teacherapi;
 
         public TeacherController(TeacherAPIController teacherapi)
@@ -35,7 +35,7 @@ namespace School.Controllers
                 }
                 else
                 {
-                    // Check for specific validation errors and add them to ModelState
+                    
                     if (string.IsNullOrEmpty(NewTeacher.TeacherFName) || string.IsNullOrEmpty(NewTeacher.TeacherLName))
                     {
                         ModelState.AddModelError("TeacherName", "Teacher name cannot be empty");
@@ -49,12 +49,12 @@ namespace School.Controllers
                         ModelState.AddModelError("TeacherEmployeeNumber", "Employee number must start with 'T' followed by digits");
                     }
 
-                    // Add a general error for duplicate employee number
+                   
                     ModelState.AddModelError("", "Failed to add teacher. Employee number may already be taken.");
                 }
             }
 
-            // If we get here, something went wrong - redisplay the form
+           
             return View("New", NewTeacher);
         }
 
@@ -93,7 +93,7 @@ namespace School.Controllers
         [HttpGet]
         public IActionResult List()
         {
-            // For now, just return a view (you can implement this later if needed)
+          
             return View();
         }
     }
