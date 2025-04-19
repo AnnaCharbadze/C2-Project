@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using MySql.Data.MySqlClient;
 using School.Models;
@@ -126,6 +126,7 @@ namespace School.Controllers
                 Connection.Open();
                 MySqlCommand Command = Connection.CreateCommand();
 
+         
                 Command.CommandText = "SELECT teacherid, teacherfname, teacherlname, hiredate, salary, employeenumber FROM teachers WHERE teacherid=@id";
                 Command.Parameters.AddWithValue("@id", id);
 
@@ -151,6 +152,89 @@ namespace School.Controllers
             }
 
             return SelectedTeacher;
+        }
+
+        /// <summary>
+        /// Updates a Teacher in the database.
+        /// </summary>
+        /// <param name="TeacherData">Teacher Object</param>
+        /// <param name="TeacherId">The Teacher ID primary key</param>
+        /// <returns>
+        /// The updated Teacher object if successful. Empty Teacher object if unsuccessful.
+        /// </returns>
+        [HttpPut(template: "UpdateTeacher/{TeacherId}")]
+        public Teacher UpdateTeacher(int TeacherId, [FromBody] Teacher TeacherData)
+        {
+            // Error handling for empty name
+            if (string.IsNullOrEmpty(TeacherData.TeacherFName) || string.IsNullOrEmpty(TeacherData.TeacherLName))
+            {
+                return new Teacher(); // Return empty teacher object
+            }
+
+            // Error handling for formatting
+            if (string.IsNullOrEmpty(TeacherData.TeacherEmployeeNumber) ||
+                !TeacherData.TeacherEmployeeNumber.StartsWith("T") ||
+                !System.Text.RegularExpressions.Regex.IsMatch(TeacherData.TeacherEmployeeNumber.Substring(1), @"^\d+$"))
+            {
+                return new Teacher(); 
+            }
+
+            // Error handling for future hire date
+            if (TeacherData.TeacherHireDate > DateTime.Now)
+            {
+                return new Teacher(); 
+            }
+
+            // Error handling for negative salary
+            if (TeacherData.TeacherSalary < 0)
+            {
+                return new Teacher(); 
+            }
+
+            // Check if teacher exists before updat
+            bool teacherExists = false;
+            using (MySqlConnection Connection = _context.AccessDatabase())
+            {
+                Connection.Open();
+                MySqlCommand CheckCommand = Connection.CreateCommand();
+                CheckCommand.CommandText = "SELECT COUNT(*) FROM teachers WHERE teacherid = @id";
+                CheckCommand.Parameters.AddWithValue("@id", TeacherId);
+                int count = Convert.ToInt32(CheckCommand.ExecuteScalar());
+                teacherExists = (count > 0);
+            }
+
+            // If a teacher does not exist
+            if (!teacherExists)
+            {
+                return new Teacher(); 
+            }
+
+            // Update the teacher 
+            using (MySqlConnection Connection = _context.AccessDatabase())
+            {
+                Connection.Open();
+                MySqlCommand Command = Connection.CreateCommand();
+
+               
+                Command.CommandText = "UPDATE teachers SET teacherfname=@teacherfname, teacherlname=@teacherlname, hiredate=@hiredate, salary=@salary, employeenumber=@employeenumber WHERE teacherid=@id";
+                Command.Parameters.AddWithValue("@teacherfname", TeacherData.TeacherFName);
+                Command.Parameters.AddWithValue("@teacherlname", TeacherData.TeacherLName);
+                Command.Parameters.AddWithValue("@hiredate", TeacherData.TeacherHireDate);
+                Command.Parameters.AddWithValue("@salary", TeacherData.TeacherSalary);
+                Command.Parameters.AddWithValue("@employeenumber", TeacherData.TeacherEmployeeNumber);
+                Command.Parameters.AddWithValue("@id", TeacherId);
+
+                int rowsAffected = Command.ExecuteNonQuery();
+
+                
+                if (rowsAffected > 0)
+                {
+                    return FindTeacher(TeacherId);
+                }
+            }
+
+            // If something went wrong
+            return new Teacher();
         }
     }
 }
