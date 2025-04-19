@@ -1,0 +1,114 @@
+﻿@model School.Models.Teacher
+
+<div id="containershow">
+    <nav>
+        <a class="navlink" href="/TeacherPage/List">Back to List</a>
+    </nav>
+
+    <h2>Edit Teacher</h2>
+
+    @if (TempData["ErrorMessage"] != null)
+    {
+        <div class="alert alert-danger">
+            @TempData["ErrorMessage"]
+        </div>
+    }
+
+    @if (!ViewData.ModelState.IsValid)
+    {
+        <div class="alert alert-danger">
+            <ul>
+                @foreach (var error in ViewData.ModelState.Values.SelectMany(v => v.Errors))
+                {
+                    <li>@error.ErrorMessage</li>
+                }
+            </ul>
+        </div>
+    }
+
+    <form method="POST" action="/TeacherPage/Update/@Model.TeacherId">
+        <input type="hidden" name="TeacherId" value="@Model.TeacherId" />
+
+        <div class="inputrow">
+            <label for="TeacherFName">First Name:</label>
+            <input type="text" id="TeacherFName" name="TeacherFName" value="@Model.TeacherFName" required />
+        </div>
+
+        <div class="inputrow">
+            <label for="TeacherLName">Last Name:</label>
+            <input type="text" id="TeacherLName" name="TeacherLName" value="@Model.TeacherLName" required />
+        </div>
+
+        <div class="inputrow">
+            <label for="TeacherEmployeeNumber">Employee Number:</label>
+            <input type="text" id="TeacherEmployeeNumber" name="TeacherEmployeeNumber" value="@Model.TeacherEmployeeNumber" required pattern="T\d+" title="Must start with 'T' followed by numbers" />
+            <small>Format: T followed by numbers (e.g., T123)</small>
+        </div>
+
+        <div class="inputrow">
+            <label for="TeacherHireDate">Hire Date:</label>
+            <input type="date" id="TeacherHireDate" name="TeacherHireDate" value="@Model.TeacherHireDate.ToString("yyyy-MM-dd")" max="@DateTime.Now.ToString("yyyy-MM-dd")" required />
+        </div>
+
+        <div class="inputrow">
+            <label for="TeacherSalary">Salary:</label>
+            <input type="number" id="TeacherSalary" name="TeacherSalary" value="@Model.TeacherSalary" min="0" step="0.01" required />
+        </div>
+
+        <div class="inputrow">
+            <button type="submit" class="btn-primary">Update Teacher</button>
+        </div>
+    </form>
+</div>
+
+<script>
+    // Client-side validation
+    document.addEventListener('DOMContentLoaded', function() {
+        const form = document.querySelector('form');
+
+        form.addEventListener('submit', function(event) {
+            let isValid = true;
+
+            // Validate first name
+            const firstName = document.getElementById('TeacherFName').value.trim();
+            if (firstName === '') {
+                isValid = false;
+                alert('First name cannot be empty');
+            }
+
+            // Validate last name
+            const lastName = document.getElementById('TeacherLName').value.trim();
+            if (lastName === '') {
+                isValid = false;
+                alert('Last name cannot be empty');
+            }
+
+            // Validate employee number
+            const employeeNumber = document.getElementById('TeacherEmployeeNumber').value.trim();
+            if (!employeeNumber.startsWith('T') || !/^T\d+$/.test(employeeNumber)) {
+                isValid = false;
+                alert('Employee number must start with T followed by numbers');
+            }
+
+            // Validate hire date
+            const hireDate = new Date(document.getElementById('TeacherHireDate').value);
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+            if (hireDate > today) {
+                isValid = false;
+                alert('Hire date cannot be in the future');
+            }
+
+            // Validate salary
+            const salary = parseFloat(document.getElementById('TeacherSalary').value);
+            if (salary < 0) {
+                isValid = false;
+                alert('Salary cannot be negative');
+            }
+
+            if (!isValid) {
+                event.preventDefault();
+            }
+        });
+    });
+</script>
